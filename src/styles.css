@@ -1,0 +1,112 @@
+.App {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    margin-top: 50px;
+  }
+  
+  .trade-form {
+    margin-top: 20px;
+  }
+  body {
+    font-size: 18px;
+    background-color: #333; /* Цвет фона для темной темы */
+    color: white; /* Цвет текста для темной темы */
+  }
+  
+  .trade-form .long-button,
+  .trade-form .short-button,
+  .trade-form button {
+    border-radius: 25px;
+    padding: 10px 20px;
+    margin: 5px;
+    cursor: pointer;
+    border: none;
+    font-size: 16px;
+  }
+  
+  .long-button {
+    background-color: green;
+  }
+  
+  .short-button {
+    background-color: red;
+  }
+  
+  .visible {
+    text-decoration: none;
+    color: white;
+  }
+  
+  .hidden {
+    text-decoration: line-through;
+    color: #888;
+  }
+  
+  .toggle-eye {
+    cursor: pointer;
+    margin-left: 10px;
+  }
+  .long-button {
+    padding: 8px 16px;
+    margin-right: 10px;
+    cursor: pointer;
+    background-color: green;
+    color: white;
+    /* Дополнительные стили при необходимости */
+  }
+  
+  .short-button {
+    padding: 8px 16px;
+    margin-right: 10px;
+    cursor: pointer;
+    background-color: red;
+    color: white;
+    /* Дополнительные стили при необходимости */
+  }
+  
+  button:last-child {
+    margin-right: 0;
+  }
+  
+  h1 {
+    font-size: 24px;
+    margin-bottom: 20px;
+  }
+  
+  p {
+    font-size: 16px;
+    margin-bottom: 10px;
+  }
+
+  .input-field {
+    font-size: 18px; /* Устанавливаем размер шрифта */
+    padding: 15px; /* Добавляем внутренний отступ */
+    margin-bottom: 30px; /* Добавляем отступ снизу */
+    color: #000000; /* Цвет текста */
+    border-radius: 5px; /* Закругляем углы */
+  }
+  
+  .trade-table {
+    width: 100%;
+    margin-top: 20px;
+    border-collapse: collapse;
+    border: 1px solid #555;
+  }
+  
+  .trade-table th, .trade-table td {
+    border: 1px solid #555;
+    padding: 10px;
+    text-align: left;
+  }
+  
+  .trade-table th {
+    background-color: #222;
+  }
+  
+  .trade-table tbody tr:nth-child(even) {
+    background-color: #444;
+  }
+  
+  .trade-table tbody tr:nth-child(odd) {
+    background-color: #333;
+  }
