@@ -3,7 +3,7 @@ import TradeForm from './form/tradeForm.js';
 
 function App() {
   const [balance, setBalance] = useState(100);
-  const [pair, setPair] = useState('BTC/USD');
+  const [pair] = useState('BTC/USD');
   const leverage = 50;
 
   return (
