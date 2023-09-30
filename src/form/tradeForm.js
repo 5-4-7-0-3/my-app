@@ -32,14 +32,17 @@ function TradeForm() {
     const updateProfitForTrades = () => {
       setTrades((prevTrades) => {
         return prevTrades.map((trade) => {
+
           if (trade.close) {
             return trade;
           }
-          if (trade.amount - trade.profit <= 0) {
-            trade.status = 'Закрыто';
+
+          if (trade.amount + parseInt(trade.profit) <= 0) {
             trade.close = true;
+            trade.status = 'Закрыто';
             return trade;
           }
+          
           if (trade.type === 'LONG') {
             // Прибыль для длинной позиции
             trade.profit = ((((btcPrice - trade.openingPrice) * trade.amount / trade.openingPrice) * trade.leverage) * trade.leverage).toFixed(2);
