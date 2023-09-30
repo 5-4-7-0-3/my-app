@@ -85,15 +85,23 @@ function TradeForm() {
   
     // Расчет прибыли/убытка с учетом процентов за использование плеча
     const leverageFee = 1 - (closedTrade.leverage / 100);
-    const profitOrLoss = (priceChangePercentage * closedTrade.amount * leverageFee) / 100;
+    let profitOrLoss;
+  
+    // Если тип сделки LONG (покупка)
+    if (closedTrade.type === 'LONG') {
+      profitOrLoss = ((priceChangePercentage * closedTrade.amount * leverageFee) / 100).toFixed(2);
+    } else {
+      // Если тип сделки SHORT (продажа)
+      profitOrLoss = -((priceChangePercentage * closedTrade.amount * leverageFee) / 100).toFixed(2);
+    }
   
     // Рассчитываем новый баланс
-    const newBalance = balance + profitOrLoss + closedTrade.amount / closedTrade.leverage;
+    const newBalance = balance + parseFloat(profitOrLoss) + (closedTrade.amount / closedTrade.leverage);
   
     // Обновляем баланс и статус сделки
     setBalance(newBalance);
     const updatedTrades = trades.map((trade, i) =>
-      i === index ? { ...trade, status: 'Закрыто', close: true, profit: profitOrLoss.toFixed(2) } : trade
+      i === index ? { ...trade, status: 'Закрыто', close: true, profit: profitOrLoss } : trade
     );
     setTrades(updatedTrades);
   };
