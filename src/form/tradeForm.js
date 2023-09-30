@@ -35,7 +35,8 @@ function TradeForm() {
           if (trade.close) {
             return trade;
           }
-          if (trade.amount - trade.profit < 0) {
+          if (trade.amount + trade.profit <= 0) {
+            trade.status = 'Закрыто';
             trade.close = true;
             return trade;
           }
