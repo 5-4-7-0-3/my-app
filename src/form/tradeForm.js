@@ -53,7 +53,7 @@ function TradeForm() {
 
   const handleTrade = (type) => {
     const amount = parseFloat(inputAmount);
-    if (isNaN(amount) || amount <= 0) {
+    if (isNaN(amount) || amount <= 0 || amount > balance) {
       alert('Введите корректную сумму для покупки.');
       return;
     }
@@ -69,7 +69,8 @@ function TradeForm() {
       status: 'Открыто',
       close: false,
       profit: '0.00', // Начальное значение прибыли
-      leverage: leverage
+      leverage: leverage,
+      openingPrice: btcPrice,
     };
     setTrades([...trades, newTrade]);
     setInputAmount('');
@@ -78,12 +79,25 @@ function TradeForm() {
   const handleClose = (index) => {
     const closedTrade = trades[index];
     const closeBtcValue = btcPrice * closedTrade.btcAmount; // Сумма сделки при закрытии в USDT
-    const tradeValue = closedTrade.type === 'LONG' ? closeBtcValue - closedTrade.amount : closedTrade.amount - closeBtcValue;
-    const newBalance = balance + tradeValue + (closedTrade.amount / closedTrade.leverage); // Увеличиваем баланс при закрытии сделки
+  
+    // Расчет изменения в процентах
+    const priceChangePercentage = ((closeBtcValue - closedTrade.amount) / closedTrade.amount) * 100;
+  
+    // Расчет прибыли/убытка с учетом процентов за использование плеча
+    const leverageFee = 1 - (closedTrade.leverage / 100);
+    const profitOrLoss = (priceChangePercentage * closedTrade.amount * leverageFee) / 100;
+  
+    // Рассчитываем новый баланс
+    const newBalance = balance + profitOrLoss + closedTrade.amount / closedTrade.leverage;
+  
+    // Обновляем баланс и статус сделки
     setBalance(newBalance);
-    const updatedTrades = trades.map((trade, i) => (i === index ? { ...trade, status: 'Закрыто', close: true } : trade));
+    const updatedTrades = trades.map((trade, i) =>
+      i === index ? { ...trade, status: 'Закрыто', close: true, profit: profitOrLoss.toFixed(2) } : trade
+    );
     setTrades(updatedTrades);
   };
+  
 
   const formatBalance = () => {
     const btcValue = (balance / btcPrice).toFixed(6);
@@ -126,6 +140,7 @@ function TradeForm() {
           <tr>
             <th>Тип</th>
             <th>Сумма (USDT)</th>
+            <th>Цена открытия</th>
             <th>Количество BTC</th>
             <th>Статус</th>
             <th>Прибыль/Убыток (USDT)</th>
@@ -137,6 +152,7 @@ function TradeForm() {
             <tr key={index}>
               <td>{trade.type}</td>
               <td>{trade.amount}</td>
+              <td>{trade.openingPrice.toFixed(2)}</td> 
               <td>{trade.btcAmount}</td>
               <td>{trade.status}</td>
               <td>{trade.profit}</td> {/* Отображаем прибыль/убыток из состояния сделки */}
