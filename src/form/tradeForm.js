@@ -35,14 +35,19 @@ function TradeForm() {
           if (trade.close) {
             return trade;
           }
-          const btcValue = btcPrice * trade.btcAmount;
+          if (trade.amount - trade.profit < 0) {
+            trade.close = true;
+            return trade;
+          }
           if (trade.type === 'LONG') {
             // Прибыль для длинной позиции
-            trade.profit = (btcValue - trade.amount).toFixed(2);
+            trade.profit = ((((btcPrice - trade.openingPrice) * trade.amount / trade.openingPrice) * trade.leverage) * trade.leverage).toFixed(2);
           } else {
             // Прибыль для короткой позиции
-            trade.profit = (trade.amount - btcValue).toFixed(2);
+            trade.profit = ((((trade.openingPrice - btcPrice) * trade.amount / trade.openingPrice) * trade.leverage) * trade.leverage).toFixed(2);
           }
+          trade.btcPrice = btcPrice;
+
           return trade;
         });
       });
@@ -64,13 +69,15 @@ function TradeForm() {
     setBalance(newBalance);
     const newTrade = {
       type: type,
-      amount: tradeValue.toFixed(2), // Сумма сделки в USDT
-      btcAmount: btcValue.toFixed(6), // Количество BTC
+      amount, // Сумма сделки в USDT
+      amountCredit: tradeValue,
+      btcAmount: btcValue.toFixed(2), // Количество BTC
       status: 'Открыто',
       close: false,
       profit: '0.00', // Начальное значение прибыли
       leverage: leverage,
       openingPrice: btcPrice,
+      btcPrice
     };
     setTrades([...trades, newTrade]);
     setInputAmount('');
@@ -78,37 +85,28 @@ function TradeForm() {
 
   const handleClose = (index) => {
     const closedTrade = trades[index];
-    const closeBtcValue = btcPrice * closedTrade.btcAmount; // Сумма сделки при закрытии в USDT
-  
-    // Расчет изменения в процентах
-    const priceChangePercentage = ((closeBtcValue - closedTrade.amount) / closedTrade.amount) * 100;
-  
-    // Расчет прибыли/убытка с учетом процентов за использование плеча
-    const leverageFee = 1 - (closedTrade.leverage / 100);
-    let profitOrLoss;
   
     // Если тип сделки LONG (покупка)
     if (closedTrade.type === 'LONG') {
-      profitOrLoss = ((priceChangePercentage * closedTrade.amount * leverageFee) / 100).toFixed(2);
+      closedTrade.profit = (((btcPrice - closedTrade.openingPrice) * closedTrade.amount / closedTrade.openingPrice) * closedTrade.leverage) * closedTrade.leverage;
     } else {
-      // Если тип сделки SHORT (продажа)
-      profitOrLoss = -((priceChangePercentage * closedTrade.amount * leverageFee) / 100).toFixed(2);
+      closedTrade.profit = (((closedTrade.openingPrice - btcPrice) * closedTrade.amount / closedTrade.openingPrice) * closedTrade.leverage) * closedTrade.leverage;
     }
   
     // Рассчитываем новый баланс
-    const newBalance = balance + parseFloat(profitOrLoss) + (closedTrade.amount / closedTrade.leverage);
-  
+    const newBalance = balance + closedTrade.profit + closedTrade.amount;
     // Обновляем баланс и статус сделки
     setBalance(newBalance);
+    const profit = closedTrade.profit.toFixed(2)
     const updatedTrades = trades.map((trade, i) =>
-      i === index ? { ...trade, status: 'Закрыто', close: true, profit: profitOrLoss } : trade
+      i === index ? { ...trade, status: 'Закрыто', close: true, profit } : trade
     );
     setTrades(updatedTrades);
   };
   
 
   const formatBalance = () => {
-    const btcValue = (balance / btcPrice).toFixed(6);
+    const btcValue = (balance / btcPrice).toFixed(2);
     return `(${balance.toFixed(2)}$ ≈ ${btcValue} BTC)`;
   };
 
@@ -148,10 +146,12 @@ function TradeForm() {
           <tr>
             <th>Тип</th>
             <th>Сумма (USDT)</th>
+            <th>Сумма (USDT)x50</th>
             <th>Цена открытия</th>
             <th>Количество BTC</th>
             <th>Статус</th>
             <th>Прибыль/Убыток (USDT)</th>
+            <th>BCT при закрытии(USDT)</th>
             <th>Закрыть</th>
           </tr>
         </thead>
@@ -160,10 +160,12 @@ function TradeForm() {
             <tr key={index}>
               <td>{trade.type}</td>
               <td>{trade.amount}</td>
+              <td>{trade.amountCredit}</td>
               <td>{trade.openingPrice.toFixed(2)}</td> 
               <td>{trade.btcAmount}</td>
               <td>{trade.status}</td>
               <td>{trade.profit}</td> {/* Отображаем прибыль/убыток из состояния сделки */}
+              <td>{trade.btcPrice}</td>
               <td>{!trade.close && <button onClick={() => handleClose(index)}>Закрыть</button>}</td>
             </tr>
           ))}
