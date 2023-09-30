@@ -162,7 +162,7 @@ function TradeForm() {
               <td>{trade.type}</td>
               <td>{trade.amount}</td>
               <td>{trade.amountCredit}</td>
-              <td>{trade.openingPrice.toFixed(2)}</td> 
+              <td>{trade.openingPrice.toFixed(6)}</td> 
               <td>{trade.btcAmount}</td>
               <td>{trade.status}</td>
               <td>{trade.profit}</td> {/* Отображаем прибыль/убыток из состояния сделки */}
