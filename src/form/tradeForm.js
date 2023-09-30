@@ -107,7 +107,7 @@ function TradeForm() {
   
 
   const formatBalance = () => {
-    const btcValue = (balance / btcPrice).toFixed(6);
+    const btcValue = (balance / btcPrice).toFixed(10);
     return `(${balance.toFixed(2)}$ ≈ ${btcValue} BTC)`;
   };
 
