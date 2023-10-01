@@ -40,11 +40,14 @@ function TradeForm() {
           if (trade.amount + parseInt(trade.profit) <= 0) {
             trade.close = true;
             trade.status = 'Закрыто';
+            trade.roi  = (((trade.profit - trade.amount) / trade.amount) * 100).toFixed(2);
+
             return trade;
           }
 
           if (trade.type === 'LONG') {
             // Прибыль для длинной позиции
+            
             trade.profit = ((((btcPrice - trade.openingPrice) * trade.amount / trade.openingPrice) * trade.leverage) * trade.leverage).toFixed(2);
           } else {
             // Прибыль для короткой позиции
@@ -80,7 +83,8 @@ function TradeForm() {
       profit: '0.00', // Начальное значение прибыли
       leverage: leverage,
       openingPrice: btcPrice,
-      btcPrice
+      btcPrice,
+      roi: 0
     };
     setTrades([...trades, newTrade]);
     setInputAmount('');
@@ -91,11 +95,13 @@ function TradeForm() {
   
     // Если тип сделки LONG (покупка)
     if (closedTrade.type === 'LONG') {
+      closedTrade.roi  = (((closedTrade.profit - closedTrade.amount) / closedTrade.amount) * 100).toFixed(2);
       closedTrade.profit = (((btcPrice - closedTrade.openingPrice) * closedTrade.amount / closedTrade.openingPrice) * closedTrade.leverage) * closedTrade.leverage;
     } else {
+      closedTrade.roi  = (((closedTrade.profit - closedTrade.amount) / closedTrade.amount) * 100).toFixed(2);
       closedTrade.profit = (((closedTrade.openingPrice - btcPrice) * closedTrade.amount / closedTrade.openingPrice) * closedTrade.leverage) * closedTrade.leverage;
     }
-  
+
     // Рассчитываем новый баланс
     const newBalance = balance + closedTrade.profit + closedTrade.amount;
     // Обновляем баланс и статус сделки
@@ -154,6 +160,7 @@ function TradeForm() {
             <th>Количество BTC</th>
             <th>Статус</th>
             <th>Прибыль/Убыток (USDT)</th>
+            <th>ROI (%)</th> {/* Новая ячейка для отображения ROI */}
             <th>BCT при закрытии(USDT)</th>
             <th>Закрыть</th>
           </tr>
@@ -168,6 +175,7 @@ function TradeForm() {
               <td>{trade.btcAmount}</td>
               <td>{trade.status}</td>
               <td>{trade.profit}</td> {/* Отображаем прибыль/убыток из состояния сделки */}
+              <td>{trade.roi}</td> {/* Расчет ROI */}
               <td>{trade.btcPrice}</td>
               <td>{!trade.close && <button onClick={() => handleClose(index)}>Закрыть</button>}</td>
             </tr>
