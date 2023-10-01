@@ -45,10 +45,10 @@ function TradeForm() {
 
           if (trade.type === 'LONG') {
             // Прибыль для длинной позиции
-            trade.profit = ((((btcPrice - trade.openingPrice) * trade.amount / trade.openingPrice) * trade.leverage)).toFixed(2);
+            trade.profit = ((((btcPrice - trade.openingPrice) * trade.amount / trade.openingPrice) * trade.leverage) * trade.leverage).toFixed(2);
           } else {
             // Прибыль для короткой позиции
-            trade.profit = ((((trade.openingPrice - btcPrice) * trade.amount / trade.openingPrice) * trade.leverage)).toFixed(2);
+            trade.profit = ((((trade.openingPrice - btcPrice) * trade.amount / trade.openingPrice) * trade.leverage) * trade.leverage).toFixed(2);
           }
           trade.btcPrice = btcPrice;
 
