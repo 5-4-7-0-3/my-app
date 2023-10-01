@@ -40,8 +40,8 @@ function TradeForm() {
           if (trade.amount + parseInt(trade.profit) <= 0) {
             trade.close = true;
             trade.status = 'Закрыто';
-            const newBalance = balance + trade.profit + trade.amount;
-            setBalance(newBalance)
+            const newBalance = balance + parseInt(trade.profit);
+            setBalance(newBalance);
             return trade;
           }
 
@@ -58,9 +58,8 @@ function TradeForm() {
         });
       });
     };
-
     updateProfitForTrades();
-  }, [btcPrice]);
+  }, [btcPrice, balance]);
 
   const handleTrade = (type) => {
     const amount = parseFloat(inputAmount);
