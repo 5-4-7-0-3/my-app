@@ -40,8 +40,6 @@ function TradeForm() {
           if (trade.amount + parseInt(trade.profit) <= 0) {
             trade.close = true;
             trade.status = 'Закрыто';
-            const newBalance = balance + parseInt(trade.profit);
-            setBalance(newBalance);
             return trade;
           }
 
